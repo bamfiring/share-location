@@ -1,0 +1,12 @@
+{
+  "name": "live-location-share-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A no-dependency realtime location sharing app",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

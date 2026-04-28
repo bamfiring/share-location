@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>실시간 위치 공유</title>
+    <meta name="theme-color" content="#c2410c" />
+    <meta
+      name="description"
+      content="방 코드를 통해 현재 위치를 지도에서 실시간으로 공유하는 모바일 홈화면용 앱"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="위치 공유" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Realtime Geo Room</p>
+          <h1>실시간 위치 공유 앱</h1>
+          <p class="subcopy">
+            방 코드를 만들어 함께 접속하고, 현재 위치를 지도에서 실시간으로 확인하세요.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="create-room-btn" class="secondary">새 방 만들기</button>
+          <button id="share-link-btn" class="ghost">초대 링크 복사</button>
+          <button id="install-btn" class="ghost" hidden>홈화면에 설치</button>
+        </div>
+      </section>
+
+      <section class="panel controls">
+        <div class="field">
+          <label for="name">닉네임</label>
+          <input id="name" maxlength="30" placeholder="예: 민지" />
+        </div>
+        <div class="field room-field">
+          <label for="room-code">방 코드</label>
+          <input id="room-code" maxlength="12" placeholder="예: 3F8A2C" />
+        </div>
+        <div class="field">
+          <label for="color">내 표시 색상</label>
+          <input id="color" type="color" value="#1d4ed8" />
+        </div>
+        <div class="actions">
+          <button id="join-btn">입장하고 공유 시작</button>
+          <button id="stop-btn" class="danger" disabled>공유 중지</button>
+        </div>
+        <p id="status" class="status">방에 입장하면 위치 추적이 시작됩니다.</p>
+        <p id="network-status" class="network-status">온라인 상태</p>
+      </section>
+
+      <section class="layout">
+        <div class="panel map-panel">
+          <div class="map-header">
+            <div>
+              <h2>라이브 맵</h2>
+              <p id="room-label">방 코드: 없음</p>
+            </div>
+            <button id="fit-btn" class="ghost">전체 보기</button>
+          </div>
+          <div id="map"></div>
+        </div>
+
+        <aside class="panel sidebar">
+          <div class="sidebar-header">
+            <h2>참여자</h2>
+            <span id="participant-count">0명</span>
+          </div>
+          <div id="participants" class="participants"></div>
+        </aside>
+      </section>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
