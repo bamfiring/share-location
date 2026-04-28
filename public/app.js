@@ -52,6 +52,7 @@ function restorePreferences() {
   try {
     const raw = localStorage.getItem("geo-share-preferences");
     if (!raw) return;
+
     const saved = JSON.parse(raw);
     if (saved.name) els.name.value = saved.name;
     if (saved.color) els.color.value = saved.color;
@@ -200,6 +201,17 @@ function connectStream(roomId) {
   });
 }
 
+async function parseResponse(response) {
+  const raw = await response.text();
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return raw ? JSON.parse(raw) : {};
+  }
+
+  return { error: raw || `HTTP ${response.status}` };
+}
+
 async function postJson(url, payload) {
   const response = await fetch(url, {
     method: "POST",
@@ -207,7 +219,7 @@ async function postJson(url, payload) {
     body: JSON.stringify(payload)
   });
 
-  const data = await response.json();
+  const data = await parseResponse(response);
   if (!response.ok) {
     throw new Error(data.error || "요청 실패");
   }
@@ -378,40 +390,3 @@ window.addEventListener("beforeinstallprompt", (event) => {
   els.installBtn.hidden = false;
 });
 
-window.addEventListener("appinstalled", () => {
-  state.deferredPrompt = null;
-  els.installBtn.hidden = true;
-  setStatus("앱이 홈화면에 설치되었습니다.");
-});
-
-window.addEventListener("online", updateNetworkStatus);
-window.addEventListener("offline", updateNetworkStatus);
-
-els.name.addEventListener("input", persistPreferences);
-els.roomCode.addEventListener("input", persistPreferences);
-els.color.addEventListener("input", persistPreferences);
-els.createRoomBtn.addEventListener("click", createRoom);
-els.joinBtn.addEventListener("click", joinRoom);
-els.stopBtn.addEventListener("click", stopSharing);
-els.fitBtn.addEventListener("click", fitMapToParticipants);
-els.installBtn.addEventListener("click", () => {
-  installApp().catch((error) => setStatus(error.message, true));
-});
-els.shareLinkBtn.addEventListener("click", () => {
-  copyInviteLink().catch((error) => setStatus(error.message, true));
-});
-
-window.addEventListener("beforeunload", () => {
-  if (state.roomId && state.userId) {
-    navigator.sendBeacon(
-      `/api/rooms/${state.roomId}/leave`,
-      new Blob([JSON.stringify({ userId: state.userId })], { type: "application/json" })
-    );
-  }
-});
-
-renderParticipants();
-bootstrapFromQuery();
-restorePreferences();
-updateNetworkStatus();
-registerServiceWorker();
