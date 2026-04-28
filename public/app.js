@@ -390,3 +390,40 @@ window.addEventListener("beforeinstallprompt", (event) => {
   els.installBtn.hidden = false;
 });
 
+window.addEventListener("appinstalled", () => {
+  state.deferredPrompt = null;
+  els.installBtn.hidden = true;
+  setStatus("앱이 홈화면에 설치되었습니다.");
+});
+
+window.addEventListener("online", updateNetworkStatus);
+window.addEventListener("offline", updateNetworkStatus);
+
+els.name.addEventListener("input", persistPreferences);
+els.roomCode.addEventListener("input", persistPreferences);
+els.color.addEventListener("input", persistPreferences);
+els.createRoomBtn.addEventListener("click", createRoom);
+els.joinBtn.addEventListener("click", joinRoom);
+els.stopBtn.addEventListener("click", stopSharing);
+els.fitBtn.addEventListener("click", fitMapToParticipants);
+els.installBtn.addEventListener("click", () => {
+  installApp().catch((error) => setStatus(error.message, true));
+});
+els.shareLinkBtn.addEventListener("click", () => {
+  copyInviteLink().catch((error) => setStatus(error.message, true));
+});
+
+window.addEventListener("beforeunload", () => {
+  if (state.roomId && state.userId) {
+    navigator.sendBeacon(
+      `/api/rooms/${state.roomId}/leave`,
+      new Blob([JSON.stringify({ userId: state.userId })], { type: "application/json" })
+    );
+  }
+});
+
+renderParticipants();
+bootstrapFromQuery();
+restorePreferences();
+updateNetworkStatus();
+registerServiceWorker();
