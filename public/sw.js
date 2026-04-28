@@ -1,4 +1,4 @@
-const CACHE_NAME = "geo-room-pwa-v1";
+const CACHE_NAME = "geo-room-pwa-v2";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -7,9 +7,7 @@ const APP_SHELL = [
   "/manifest.webmanifest",
   "/icons/app-icon.svg",
   "/icons/app-icon-maskable.svg",
-  "/offline.html",
-  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  "/offline.html"
 ];
 
 self.addEventListener("install", (event) => {
@@ -35,7 +33,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/")) {
+  if (url.pathname.startsWith("/api/") || url.origin !== self.location.origin) {
     event.respondWith(fetch(request));
     return;
   }
